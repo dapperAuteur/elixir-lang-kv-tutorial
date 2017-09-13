@@ -28,6 +28,10 @@ defmodule KV.BucketTest do
 
     assert KV.Bucket.get(bucket, "leche") == nil
   end
+
+  test "are temporary workers" do
+    assert Supervisor.child_spec(KV.Bucket, []).restart == :temporary
+  end
 end
 
 # this version doesn't use callbacks

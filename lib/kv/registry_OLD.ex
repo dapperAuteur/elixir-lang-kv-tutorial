@@ -32,19 +32,40 @@
 #   ## Server Callbacks
 #
 #   def init(:ok) do
-#     {:ok, %{}}
+#     names = %{}
+#     refs = %{}
+#     {:ok, {names, refs}}
 #   end
 #
-#   def handle_call({:lookup, name}, _from, names) do
-#     {:reply, Map.fetch(names, name), names}
+#   # handle_call/3 must be used for synchronous requests. This should be the default choice as waiting for the server reply is a useful backpressure mechanism.
+#
+#   def handle_call({:lookup, name}, _from, {names, _} = state) do
+#     {:reply, Map.fetch(names, name), state}
 #   end
 #
-#   def handle_cast({:create, name}, names) do
+#   # handle_cast/2 must be used for asynchronous requests, when you don't care about a reply. A cast does not even guarantee the server has received the message and, for this reason, should be used sparingly. For example, the create/2 function we have defined in this chapter should have used call/2. We have used cast/2 for didactic purposes.
+#
+#   def handle_cast({:create, name}, {names, refs}) do
 #     if Map.has_key?(names, name) do
-#       {:noreply, names}
+#       {:noreply, {names, refs}}
 #     else
-#       {:ok, bucket} = KV.Bucket.start_link([])
-#       {:noreply, Map.put(names, name, bucket)}
+#       {:ok, pid} = KV.Bucket.start_link([])
+#       ref = Process.monitor(pid)
+#       refs = Map.put(refs, ref, name)
+#       names = Map.put(names, name, pid)
+#       {:noreply, {names, refs}}
 #     end
+#   end
+#
+#   # handle_info/2 must be used for all other messages a server may receive that are not sent via GenServer.call/2 or GenServer.cast/2, including regular messages sent with send/2. The monitoriing :DOWN messages are such an example of this.
+#
+#   def handle_info({:DOWN, ref, :process, _pid, _reason}, {names, refs}) do
+#     {name, refs} = Map.pop(refs, ref)
+#     names = Map.delete(names, name)
+#     {:noreply, {names, refs}}
+#   end
+#
+#   def handle_info(_msg, state) do
+#     {:noreply, state}
 #   end
 # end
