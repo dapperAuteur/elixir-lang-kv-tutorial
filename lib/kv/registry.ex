@@ -62,7 +62,7 @@ defmodule KV.Registry do
       ref = Process.monitor(pid)
       refs = Map.put(refs, ref, name)
       :ets.insert(names, {name, pid})
-      {:noreply, pid, {names, refs}}
+      {:reply, pid, {names, refs}}
     end
   end
 
