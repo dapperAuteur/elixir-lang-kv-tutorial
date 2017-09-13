@@ -14,6 +14,9 @@ defmodule KV.BucketTest do
     assert KV.Bucket.get(bucket, "milk") == 3
   end
 
+  @tag :mine
+  @tag capture_log: true
+
   test "deletes `key` from `bucket`, if `key` exists", %{bucket: bucket} do
 
     assert KV.Bucket.get(bucket, "leche") == nil
