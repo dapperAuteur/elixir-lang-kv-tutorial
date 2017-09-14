@@ -32,6 +32,36 @@ defmodule KVServer.Command do
 
   iex> KVServer.Command.parse "GET shopping\\r\\n"
   {:error, :unknown_command}
+
+  iex> 1 + 1
+  2
+
+  iex> Enum.map [1, 2, 3], fn(x) ->
+  ...> x * 2
+  ...> end
+  [2, 4, 6]
+
+  iex> Enum.map [1, 2, 3], fn(x) ->
+  iex> x + 3
+  iex> end
+  [4, 5, 6]
+
+  iex> a = 1
+  1
+  iex> a + 1
+  2
+
+  iex> pid = spawn fn -> :ok end
+  iex> is_pid(pid)
+  true
+
+  iex(1)> [1 + 2,
+  ...(1)> 3]
+  [3, 3]
+
+  iex(1)> [3 -1,
+  iex(1)> 4]
+  [2, 4]
   """
 
   # def parse(_line) do
