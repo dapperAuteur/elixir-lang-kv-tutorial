@@ -8,6 +8,7 @@ defmodule KVServer.Application do
   def start(_type, _args) do
     # List all child processes to be supervised
     children = [
+      {Task.Supervisor, name: KVServer.TaskSupervisor}, {Task, fn -> KVServer.accept(4040) end}
       # Starts a worker by calling: KVServer.Worker.start_link(arg)
       # {KVServer.Worker, arg},
     ]
