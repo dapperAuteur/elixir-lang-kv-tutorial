@@ -50,17 +50,9 @@ defmodule KVServer do
     #
     # serve(socket)
     msg =
-      case read_line(socket) do
-        {:ok, data} ->
-          case KVServer.Command.parse(data) do
-            {:ok, command} ->
-              KVServer.Command.run(command)
-            {:error, _} = err ->
-              err
-          end
-        {:error, _} = err ->
-          err
-      end
+      with {:ok, data} <- read_line(socket),
+           {:ok, command} <- KVServer.Command.parse(data),
+           do: KVServer.Command.run(command)
       write_line(socket, msg)
       serve(socket)
   end
@@ -80,7 +72,7 @@ defmodule KVServer do
     :gen_tcp.send(socket, 'UNKNOWN COMMAND\r\n')
   end
 
-  defp write_line(socket, {:error, :closed}) do
+  defp write_line(_socket, {:error, :closed}) do
     # The connection was closed, exit politely.
     exit(:shutdown)
   end
