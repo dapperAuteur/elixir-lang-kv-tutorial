@@ -1,27 +1,27 @@
 defmodule KVServer.Command do
-  @doc ~s"""
+  @doc ~S"""
   Parses the given `line` into a command.
 
   ## Examples
 
-  iex> KVServer.Command.parse "CREATE shopping\\r\\n"
+  iex> KVServer.Command.parse "CREATE shopping\r\n"
   {:ok, {:create, "shopping"}}
 
-  iex> KVServer.Command.parse "CREATE shopping\\r\\n"
+  iex> KVServer.Command.parse "CREATE shopping\r\n"
   {:ok, {:create, "shopping"}}
 
-  iex> KVServer.Command.parse "PUT shopping milk 1\\r\\n"
+  iex> KVServer.Command.parse "PUT shopping milk 1\r\n"
   {:ok, {:put, "shopping", "milk", "1"}}
 
-  iex> KVServer.Command.parse "GET shopping milk\\r\\n"
+  iex> KVServer.Command.parse "GET shopping milk\r\n"
   {:ok, {:get, "shopping", "milk"}}
 
-  iex> KVServer.Command.parse "DELETE shopping eggs\\r\\n"
+  iex> KVServer.Command.parse "DELETE shopping eggs\r\n"
   {:ok, {:delete, "shopping", "eggs"}}
 
   Unkown commands or commands with the wrong number of arguments return an error:
 
-  iex> KVServer.Command.parse "UNKNOWN shopping eggs\\r\\n"
+  iex> KVServer.Command.parse "UNKNOWN shopping eggs\r\n"
   {:error, :unknown_command}
 
   iex> KVServer.Command.parse "GET shopping\\r\\n"
@@ -77,26 +77,26 @@ defmodule KVServer.Command do
   """
   def run(command)
 
-  def run({:create, bucket}, pid) do
-    KV.Registry.create(pid, bucket)
+  def run({:create, bucket}) do
+    KV.Registry.create(KV.Registry, bucket)
     {:ok, "OK\r\n"}
   end
 
-  def run({:get, bucket, key}, pid) do
+  def run({:get, bucket, key}) do
     lookup bucket, fn pid ->
       value = KV.Bucket.get(pid, key)
       {:ok, "#{value}\r\nOK\r\n"}
     end
   end
 
-  def run({:put, bucket, key, value}, pid) do
+  def run({:put, bucket, key, value}) do
     lookup bucket, fn pid ->
       KV.Bucket.put(pid, key, value)
       {:ok, "OK\r\n"}
     end
   end
 
-  def run({:delete, bucket, key}, pid) do
+  def run({:delete, bucket, key}) do
     lookup bucket, fn pid ->
       KV.Bucket.delete(pid, key)
       {:ok, "OK\r\n"}
