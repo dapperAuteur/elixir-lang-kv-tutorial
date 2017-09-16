@@ -69,7 +69,7 @@ defmodule KVServer do
 
   defp write_line(socket, {:error, :unknown_command}) do
     #Known error. Write to the client
-    :gen_tcp.send(socket, 'UNKNOWN COMMAND\r\n')
+    :gen_tcp.send(socket, "UNKNOWN COMMAND\r\n")
   end
 
   defp write_line(_socket, {:error, :closed}) do
@@ -77,13 +77,17 @@ defmodule KVServer do
     exit(:shutdown)
   end
 
+  # new function maybe it should replace function on line 70
+
+  defp write_line(socket, {:error, :not_found}) do
+    :gen_tcp.send(socket, "NOT FOUND\r\n")
+  end
+
   defp write_line(socket, {:error, error}) do
     # Unknown error. Write to the client and exit.
     :gen_tcp.send(socket, "ERROR\r\n")
     exit(error)
   end
-# new function maybe it should replace function on line 70
-  defp write_line(socket, {:error, :not_found}) do
-    :gen_tcp.send(socket, "NOT FOUND\r\n")
-  end
+
+
 end

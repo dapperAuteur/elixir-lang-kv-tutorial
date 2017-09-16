@@ -28,3 +28,8 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+# ERROR not sure if the line below is necessary?
+config :iex, default_prompt: ">>>"
+config :kv, :routing_table,
+        [{?a..?m, :"foo@awefulBrowns-MacBook-Air"},
+        {?n..?z, :"bar@awefulBrowns-MacBook-Air"}]
